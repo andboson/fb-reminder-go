@@ -10,4 +10,4 @@ test: generate
 
 
 build:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build ${LDFLAGS} -o fb-reminder ./cmd/fb-reminder
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build ${LDFLAGS} -o reminder ./cmd/fb-reminder

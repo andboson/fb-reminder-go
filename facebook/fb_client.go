@@ -1,11 +1,11 @@
 package facebook
 
-import "github.com/andboson/fb-reminder-go/reminder"
+import "github.com/andboson/fb-reminder-go/reminders"
 
 type FBManager interface {
 	ShowMenu(userID string) error
-	ShowCreateConfirm(userID string, rem reminder.Reminder) error
-	ShowReminder(userID string, rem reminder.Reminder) error
+	ShowCreateConfirm(userID string, rem reminders.Reminder) error
+	ShowReminder(userID string, rem reminders.Reminder) error
 	ShowForToday(userID string) error
 	SetupPersistentMenu() error
 }
@@ -28,12 +28,12 @@ func (f *FBClient) ShowMenu(userID string) (err error) {
 	return
 }
 
-func (f *FBClient) ShowCreateConfirm(userID string, rem reminder.Reminder) (err error) {
+func (f *FBClient) ShowCreateConfirm(userID string, rem reminders.Reminder) (err error) {
 
 	return
 }
 
-func (f *FBClient) ShowReminder(userID string, rem reminder.Reminder) (err error) {
+func (f *FBClient) ShowReminder(userID string, rem reminders.Reminder) (err error) {
 
 	return
 }

@@ -1,4 +1,4 @@
-package reminder
+package reminders
 
 const (
 	getReminderByID        = `SELECT id, text, user_id, remind_at, remind_original, snoozed FROM  reminders WHERE id = $1`

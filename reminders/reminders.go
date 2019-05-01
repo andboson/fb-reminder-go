@@ -1,4 +1,4 @@
-package reminder
+package reminders
 
 import (
 	"database/sql"
