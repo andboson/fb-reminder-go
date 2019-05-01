@@ -60,13 +60,13 @@ func (s *Service) handleWebhook(w http.ResponseWriter, req *http.Request) {
 
 	//    agent.fb.ShowMenu(agent.originalRequest.payload.data.sender.id);
 
-	fmt.Printf("\n >>> %+v ", wr.GetQueryResult())
+	fmt.Printf("\n >>> %+v ", wr.GetQueryResult().GetIntent().GetName())
+	fmt.Printf("\n >>> %+v ", wr.GetQueryResult().GetIntent().GetDisplayName())
+	fmt.Printf("\n >>> %+v ", wr.GetQueryResult().GetIntent().GetParameters())
 
 	ir := wr.GetOriginalDetectIntentRequest()
-	fmt.Printf("\n >>-_->>>>>> %+v ", ir.String())
-	fmt.Printf("\n >>-_->>>>>> %+v ", ir.GetPayload())
-	fmt.Printf("\n >>-_->>>>>> %+v ", ir.ProtoMessage)
+	fmt.Printf("\n >>-_->>>>>> %+v ", ir.GetPayload().GetFields())
+	fmt.Printf("\n >>-_->>>>>> %+v ", ir.GetSource())
 
-	fmt.Printf("\n >>--> %+v ", wr.GetOriginalDetectIntentRequest())
-	fmt.Printf("\n >>-_-> %+v ", wr)
+	fmt.Printf("\n >>-_____-> %+v ", wr)
 }
