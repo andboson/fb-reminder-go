@@ -65,8 +65,9 @@ func (s *Service) handleWebhook(w http.ResponseWriter, req *http.Request) {
 	fmt.Printf("\n >>> %+v ", wr.GetQueryResult().GetIntent().GetParameters())
 
 	ir := wr.GetOriginalDetectIntentRequest()
-	fmt.Printf("\n >>-_->>>>>> %+v ", ir.GetPayload().GetFields())
-	fmt.Printf("\n >>-_->>>>>> %+v ", ir.GetSource())
+	fmt.Printf("\n 00>>-_->>>>>> %+v ", ir.GetPayload().GetFields())
+
+	fmt.Printf("\n 11>>-_->>>>>> %+v ", wr.GetQueryResult().GetParameters())
 
 	fmt.Printf("\n >>-_____-> %+v ", wr)
 }
