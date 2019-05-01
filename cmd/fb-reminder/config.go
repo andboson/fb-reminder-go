@@ -30,7 +30,7 @@ type Config struct {
 }
 
 func config() (*Config, error) {
-	var cfg *Config
+	var cfg = Config{}
 
 	b, err := ioutil.ReadFile(configFile)
 	if err != nil {
@@ -38,7 +38,8 @@ func config() (*Config, error) {
 		return nil, err
 	}
 
-	err = json.Unmarshal(b, cfg)
+	err = json.Unmarshal(b, &cfg)
 
-	return cfg, err
+
+	return &cfg, err
 }
