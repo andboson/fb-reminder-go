@@ -27,7 +27,7 @@ func NewService(address string, rm reminders.Reminderer, fb facebook.FBManager) 
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/webhook", server.handleWebhook)
+	mux.HandleFunc("/", server.handleWebhook)
 
 	server.srv = &http.Server{
 		Addr:    address,
@@ -61,6 +61,12 @@ func (s *Service) handleWebhook(w http.ResponseWriter, req *http.Request) {
 	//    agent.fb.ShowMenu(agent.originalRequest.payload.data.sender.id);
 
 	fmt.Printf("\n >>> %+v ", wr.GetQueryResult())
+
+	ir := wr.GetOriginalDetectIntentRequest()
+	fmt.Printf("\n >>-_->>>>>> %+v ", ir.String())
+	fmt.Printf("\n >>-_->>>>>> %+v ", ir.GetPayload())
+	fmt.Printf("\n >>-_->>>>>> %+v ", ir.ProtoMessage)
+
 	fmt.Printf("\n >>--> %+v ", wr.GetOriginalDetectIntentRequest())
 	fmt.Printf("\n >>-_-> %+v ", wr)
 }
