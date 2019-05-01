@@ -1,4 +1,4 @@
-package dialogflow
+package processor
 
 import (
 	"context"
@@ -8,6 +8,10 @@ import (
 	"google.golang.org/api/option"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 )
+
+type Processor interface {
+	ShowMenu(ctx context.Context, fbClientID string)
+}
 
 type DFProcessor struct {
 	authJSONFilePath string
@@ -23,7 +27,7 @@ func (dp *DFProcessor) NewDFProcessor() {
 	dp.sessionClient = sessionClient
 }
 
-func (dp *DFProcessor) ProcessIntent(ctx context.Context) {
+func (dp *DFProcessor) ShowMenu(ctx context.Context, fbClientID string) {
 	req := &dialogflowpb.DetectIntentRequest{
 		// TODO: Fill request struct fields.
 	}

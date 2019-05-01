@@ -40,6 +40,5 @@ func config() (*Config, error) {
 
 	err = json.Unmarshal(b, &cfg)
 
-
 	return &cfg, err
 }
