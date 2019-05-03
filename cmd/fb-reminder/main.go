@@ -1,10 +1,11 @@
 package main
 
 import (
+	"log"
+
 	"github.com/andboson/fb-reminder-go/facebook"
 	"github.com/andboson/fb-reminder-go/reminders"
 
-	log "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -12,12 +13,12 @@ func main() {
 
 	c, err := config()
 	if err != nil {
-		log.WithError(err).Fatalf("Err load config")
+		log.Fatalf("Err load config: %s", err)
 	}
 
 	db, err := InitDB(c)
 	if err != nil {
-		log.WithError(err).Fatalf("Err init db")
+		log.Fatalf("Err init db: %s", err)
 	}
 
 	rm := reminders.NewManager(db)

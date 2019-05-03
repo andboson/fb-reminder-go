@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -24,6 +25,8 @@ type serverSuite struct {
 }
 
 func (s *serverSuite) Test_MenuIntentRequest() {
+	s.fb.(*FBClientMock).On("ShowMenu", context.TODO(), "fbclient_id1").Return(nil)
+
 	resp := s.request(showMenuIntentRequest, "POST", "/webhook")
 	s.NotNil(resp)
 	s.Equal(200, resp.StatusCode)
@@ -43,11 +46,11 @@ func (s *serverSuite) SetupSuite() {
 		err := s.srv.Serve()
 		s.Require().NoError(err)
 	}()
-	time.Sleep(200 * time.Microsecond)
+	time.Sleep(500 * time.Microsecond)
 }
 
 func (s *serverSuite) TearDownSuite() {
-	//
+	s.srv.Stop()
 }
 
 func TestServerTestSuite(t *testing.T) {

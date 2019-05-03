@@ -1,8 +1,8 @@
 package main
 
 import (
+	"log"
 	"encoding/json"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 )
 
@@ -34,7 +34,7 @@ func config() (*Config, error) {
 
 	b, err := ioutil.ReadFile(configFile)
 	if err != nil {
-		log.Errorf("unable to load " + configFile)
+		log.Printf("unable to load " + configFile)
 		return nil, err
 	}
 
