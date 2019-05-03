@@ -34,7 +34,7 @@ func (f *FBClient) SetupPersistentMenu() (err error) {
 
 func (f *FBClient) ShowMenu(ctx context.Context, userID string) (err error) {
 	msg := fbbot.NewGenericMessage()
-	msg.Text = "  Reminder menu"
+//	msg.Text = "  Reminder menu"
 	msg.Bubbles = menuItems
 
 	return f.bot.Send(fbbot.User{ID: userID}, msg)

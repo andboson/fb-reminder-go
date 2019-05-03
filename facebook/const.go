@@ -6,6 +6,7 @@ const postbackType = "postback"
 
 var menuItems = []fbbot.Bubble{
 	{
+		Title: "  Reminders menu",
 		Buttons:[]fbbot.Button{
 			{
 				Type: postbackType,
