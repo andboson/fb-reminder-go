@@ -1,5 +1,0 @@
-package processor
-
-func DispatchMessage() {
-
-}
