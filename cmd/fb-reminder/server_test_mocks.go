@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/andboson/fb-reminder-go/reminders"
 	"github.com/stretchr/testify/mock"
 )
@@ -30,8 +31,8 @@ type FBClientMock struct {
 	mock.Mock
 }
 
-func (fb *FBClientMock) ShowMenu(userID string) error {
-	args := fb.Called(userID)
+func (fb *FBClientMock) ShowMenu(ctx context.Context, userID string) error {
+	args := fb.Called(ctx, userID)
 	return args.Error(0)
 }
 

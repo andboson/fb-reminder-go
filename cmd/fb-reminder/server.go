@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"log"
 
 	"github.com/andboson/fb-reminder-go/facebook"
 	"github.com/andboson/fb-reminder-go/processor"
 	"github.com/andboson/fb-reminder-go/reminders"
 
 	"github.com/golang/protobuf/jsonpb"
-	log "github.com/sirupsen/logrus"
 	"google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 )
 
@@ -45,10 +45,14 @@ func (s *Service) Serve() error {
 
 	fmt.Println("Started listening...")
 	if err = s.srv.ListenAndServe(); err != nil {
-		log.WithError(err).Errorf("Couldn't start srv")
+		log.Printf("Couldn't start srv: %s", err)
 	}
 
 	return err
+}
+
+func (s *Service) Stop() error {
+	return s.srv.Close()
 }
 
 func (s *Service) handleWebhook(w http.ResponseWriter, req *http.Request) {
@@ -56,14 +60,14 @@ func (s *Service) handleWebhook(w http.ResponseWriter, req *http.Request) {
 
 	wr := dialogflow.WebhookRequest{}
 	if err = jsonpb.Unmarshal(req.Body, &wr); err != nil {
-		log.WithError(err).Error("Couldn't Unmarshal request to jsonpb")
+		log.Printf("Couldn't Unmarshal request to jsonpb: %s", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	resp, err := s.dispatch(wr, nil, s.fb)
 	if err != nil {
-		log.WithError(err).Printf("err dispatch request")
+		log.Printf("err dispatch request: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -74,21 +78,27 @@ func (s *Service) handleWebhook(w http.ResponseWriter, req *http.Request) {
 func (s *Service) dispatch(wr dialogflow.WebhookRequest, dfp processor.Processor, fb facebook.FBManager) ([]byte, error) {
 	var resp interface{}
 	var ctx = context.Background()
-	//    agent.fb.ShowMenu(agent.originalRequest.payload.data.sender.id);
-	fmt.Printf("\n >>> %+v ", wr.GetQueryResult().GetIntent().GetName())
+	var err error
+
 	fmt.Printf("\n >>> %+v ", wr.GetQueryResult().GetIntent().GetDisplayName())
 	fmt.Printf("\n >>> %+v ", wr.GetQueryResult().GetIntent().GetParameters())
 
 	fbClientID := extractFBClientID(wr)
-	switch wr.GetQueryResult().GetIntent().GetName() {
+	switch wr.GetQueryResult().GetIntent().GetDisplayName() {
 	case "menu":
-		dfp.ShowMenu(ctx, fbClientID)
+		err = fb.ShowMenu(ctx, fbClientID)
 
+	default:
+		resp = dfp.HandleDefault(ctx, fbClientID)
+	}
+
+	if err != nil {
+		log.Printf("err dispatch intent: %s", err)
 	}
 
 	br, err := json.Marshal(resp)
 	if err != nil {
-		log.WithError(err).Printf("err marshall response")
+		log.Printf("err marshall response: %s", err)
 		br = []byte(err.Error())
 	}
 
@@ -96,16 +106,11 @@ func (s *Service) dispatch(wr dialogflow.WebhookRequest, dfp processor.Processor
 }
 
 func extractFBClientID(wr dialogflow.WebhookRequest) string {
-	odir := wr.GetOriginalDetectIntentRequest()
-	fmt.Printf("\n 00>>-_->>>>>> %+v ", odir.GetPayload().GetFields())
-	fmt.Printf("\n 11>>-_->>>>>> %+v ", wr.GetQueryResult().GetParameters())
-	fmt.Printf("\n >>-_____-> %+v ", wr)
-
 	var fbID string
+	var odir = wr.GetOriginalDetectIntentRequest()
 	if data, ok := odir.GetPayload().GetFields()["data"]; ok {
 		if sender, ok := data.GetStructValue().GetFields()["sender"]; ok {
 			senderStruct := sender.GetStructValue()
-
 			if id, ok := senderStruct.GetFields()["id"]; ok {
 				fbID = id.GetStringValue()
 			}

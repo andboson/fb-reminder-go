@@ -7,10 +7,12 @@ import (
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
 	"google.golang.org/api/option"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+
 )
 
 type Processor interface {
-	ShowMenu(ctx context.Context, fbClientID string)
+	//ShowMenu(ctx context.Context, fbClientID string)
+	HandleDefault(ctx context.Context, fbClientID string) interface{}
 }
 
 type DFProcessor struct {
@@ -27,7 +29,7 @@ func (dp *DFProcessor) NewDFProcessor() {
 	dp.sessionClient = sessionClient
 }
 
-func (dp *DFProcessor) ShowMenu(ctx context.Context, fbClientID string) {
+func (dp *DFProcessor) HandleDefault(ctx context.Context, fbClientID string) interface{}{
 	req := &dialogflowpb.DetectIntentRequest{
 		// TODO: Fill request struct fields.
 	}
@@ -37,4 +39,6 @@ func (dp *DFProcessor) ShowMenu(ctx context.Context, fbClientID string) {
 	}
 	// TODO: Use resp.
 	_ = resp
+
+	return resp
 }
