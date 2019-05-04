@@ -20,13 +20,15 @@ type Service struct {
 	srv     *http.Server
 	rm      reminders.Reminderer
 	fb      facebook.FBManager
+	dfp     processor.Processor
 }
 
-func NewService(address string, rm reminders.Reminderer, fb facebook.FBManager) *Service {
+func NewService(address string, rm reminders.Reminderer, fb facebook.FBManager, dfp processor.Processor) *Service {
 	var server = &Service{
 		address: address,
 		fb:      fb,
 		rm:      rm,
+		dfp:     dfp,
 	}
 
 	mux := http.NewServeMux()
@@ -65,7 +67,7 @@ func (s *Service) handleWebhook(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	resp, err := s.dispatch(wr, nil, s.fb)
+	resp, err := s.dispatch(wr, s.dfp, s.fb)
 	if err != nil {
 		log.Printf("err dispatch request: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)

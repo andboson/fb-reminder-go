@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/andboson/fb-reminder-go/reminders"
+	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -56,8 +57,20 @@ func (fb *FBClientMock) SetupPersistentMenu() error {
 	return args.Error(0)
 }
 
+///dialogflow Processor
+
+type DialogFlowMock struct {
+	mock.Mock
+}
+
+func (dp *DialogFlowMock) HandleDefault(ctx context.Context, fbClientID string) proto.Message {
+	args := dp.Called(ctx, fbClientID)
+	return args.Get(0).(proto.Message)
+}
+
 // const
-const showMenuIntentRequest = `{"responseId":"d143c793-211e-4bd8-a08e-e85a9a67393a-bca4db85","queryResult":{"queryText":"menu","parameters":{},"allRequiredParamsPresent":true,"fulfillmentMessages":[{"text":{"text":[""]}}],"intent":{"name":"projects/reminder-2dcf5/agent/intents/34f3bd91-bd29-4ac0-b3e2-3876bb934619","displayName":"menu"},"intentDetectionConfidence":1,"languageCode":"en"},"originalDetectIntentRequest":{"payload":
+const showMenuIntentRequest = `{"responseId":"d143c793-211e-4bd8-a08e-e85a9a67393a-bca4db85","queryResult":{"queryText":"menu","parameters":{},"allRequiredParamsPresent":true,"fulfillmentMessages":[{"text":{"text":[""]}}],"intent":{"name":"projects/reminder-2dcf5/agent/intents/34f3bd91-bd29-4ac0-b3e2-3876bb934619",
+"displayName":"menu1"},"intentDetectionConfidence":1,"languageCode":"en"},"originalDetectIntentRequest":{"payload":
 {
 "data": {
 		  "sender": {

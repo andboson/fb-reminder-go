@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/andboson/fb-reminder-go/processor"
 	"log"
 
 	"github.com/andboson/fb-reminder-go/facebook"
@@ -22,8 +23,9 @@ func main() {
 
 	rm := reminders.NewManager(db)
 	fb := facebook.NewFBClient(c.FbToken)
+	dfp := processor.NewDFProcessor("./config.json")
 
-	server := NewService(c.ServerAddress, rm, fb)
+	server := NewService(c.ServerAddress, rm, fb, dfp)
 
 	if err = server.Serve(); err != nil {
 		log.Fatalf("exit fatal")

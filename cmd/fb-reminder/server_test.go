@@ -9,23 +9,28 @@ import (
 	"time"
 
 	"github.com/andboson/fb-reminder-go/facebook"
+	"github.com/andboson/fb-reminder-go/processor"
 	"github.com/andboson/fb-reminder-go/reminders"
 
 	"github.com/stretchr/testify/suite"
+	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 )
 
 type serverSuite struct {
 	srv     *Service
 	address string
 
-	rm reminders.Reminderer
-	fb facebook.FBManager
+	rm  reminders.Reminderer
+	fb  facebook.FBManager
+	dfp processor.Processor
 
 	suite.Suite
 }
 
 func (s *serverSuite) Test_MenuIntentRequest() {
 	s.fb.(*FBClientMock).On("ShowMenu", context.TODO(), "fbclient_id1").Return(nil)
+	s.dfp.(*DialogFlowMock).On("HandleDefault", context.TODO(), "fbclient_id1").
+		Return(&dialogflowpb.Intent_Message_SimpleResponse{})
 
 	resp := s.request(showMenuIntentRequest, "POST", "/webhook")
 	s.NotNil(resp)
@@ -40,7 +45,8 @@ func (s *serverSuite) SetupSuite() {
 
 	s.fb = new(FBClientMock)
 	s.rm = new(ReminderManagerMock)
-	s.srv = NewService(c.ServerAddress, s.rm, s.fb)
+	s.dfp = new(DialogFlowMock)
+	s.srv = NewService(c.ServerAddress, s.rm, s.fb, s.dfp)
 
 	go func() {
 		err := s.srv.Serve()

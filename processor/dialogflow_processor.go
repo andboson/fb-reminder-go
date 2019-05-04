@@ -20,13 +20,17 @@ type DFProcessor struct {
 	sessionClient    *dialogflow.SessionsClient
 }
 
-func (dp *DFProcessor) NewDFProcessor() {
+func NewDFProcessor(authFile string) *DFProcessor {
+	var dp = DFProcessor{
+		authJSONFilePath: authFile,
+	}
 	ctx := context.Background()
 	sessionClient, err := dialogflow.NewSessionsClient(ctx, option.WithCredentialsFile(dp.authJSONFilePath))
 	if err != nil {
 		log.Fatal("Error in auth with Dialogflow")
 	}
 	dp.sessionClient = sessionClient
+	return &dp
 }
 
 func (dp *DFProcessor) HandleDefault(ctx context.Context, fbClientID string) proto.Message {
