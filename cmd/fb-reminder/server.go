@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -99,11 +100,13 @@ func (s *Service) dispatch(wr dialogflow.WebhookRequest) ([]byte, error) {
 		log.Printf("err dispatch intent: %s", err)
 	}
 
-	m, err := new(jsonpb.Marshaler).MarshalToString(resp)
-	if err != nil {
-		log.Printf("err marchal proto: %s", err)
-	}
-	br := []byte(m)
+	//m, err := new(jsonpb.Marshaler).MarshalToString(resp)
+	//if err != nil {
+	//	log.Printf("err marchal proto: %s", err)
+	//}
+	//br := []byte(m)
+	br, err := json.Marshal(resp)
+
 	if err != nil {
 		log.Printf("err marshall response: %s", err)
 		br = []byte(err.Error())
