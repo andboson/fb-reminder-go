@@ -88,7 +88,8 @@ func (s *Service) dispatch(wr dialogflow.WebhookRequest, dfp processor.Processor
 	fbClientID := extractFBClientID(wr)
 	switch wr.GetQueryResult().GetIntent().GetDisplayName() {
 	case "menu":
-		err = fb.ShowMenu(ctx, fbClientID)
+		resp = dfp.HandleDefault(ctx, fbClientID)
+//		err = fb.ShowMenu(ctx, fbClientID)
 
 	default:
 		resp = dfp.HandleDefault(ctx, fbClientID)

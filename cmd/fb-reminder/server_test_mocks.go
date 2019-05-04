@@ -70,7 +70,7 @@ func (dp *DialogFlowMock) HandleDefault(ctx context.Context, fbClientID string) 
 
 // const
 const showMenuIntentRequest = `{"responseId":"d143c793-211e-4bd8-a08e-e85a9a67393a-bca4db85","queryResult":{"queryText":"menu","parameters":{},"allRequiredParamsPresent":true,"fulfillmentMessages":[{"text":{"text":[""]}}],"intent":{"name":"projects/reminder-2dcf5/agent/intents/34f3bd91-bd29-4ac0-b3e2-3876bb934619",
-"displayName":"menu1"},"intentDetectionConfidence":1,"languageCode":"en"},"originalDetectIntentRequest":{"payload":
+"displayName":"menu"},"intentDetectionConfidence":1,"languageCode":"en"},"originalDetectIntentRequest":{"payload":
 {
 "data": {
 		  "sender": {
