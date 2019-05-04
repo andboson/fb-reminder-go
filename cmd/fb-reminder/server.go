@@ -2,16 +2,16 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"net/http"
 	"log"
+	"net/http"
 
 	"github.com/andboson/fb-reminder-go/facebook"
 	"github.com/andboson/fb-reminder-go/processor"
 	"github.com/andboson/fb-reminder-go/reminders"
 
 	"github.com/golang/protobuf/jsonpb"
+	"github.com/golang/protobuf/proto"
 	"google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 )
 
@@ -76,7 +76,7 @@ func (s *Service) handleWebhook(w http.ResponseWriter, req *http.Request) {
 }
 
 func (s *Service) dispatch(wr dialogflow.WebhookRequest, dfp processor.Processor, fb facebook.FBManager) ([]byte, error) {
-	var resp interface{}
+	var resp proto.Message
 	var ctx = context.Background()
 	var err error
 
@@ -96,7 +96,11 @@ func (s *Service) dispatch(wr dialogflow.WebhookRequest, dfp processor.Processor
 		log.Printf("err dispatch intent: %s", err)
 	}
 
-	br, err := json.Marshal(resp)
+	m, err := new(jsonpb.Marshaler).MarshalToString(resp)
+	if err != nil {
+		log.Printf("err marchal proto: %s", err)
+	}
+	br := []byte(m)
 	if err != nil {
 		log.Printf("err marshall response: %s", err)
 		br = []byte(err.Error())

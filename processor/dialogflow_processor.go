@@ -5,14 +5,14 @@ import (
 	"log"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
+	"github.com/golang/protobuf/proto"
 	"google.golang.org/api/option"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 )
 
 type Processor interface {
 	//ShowMenu(ctx context.Context, fbClientID string)
-	HandleDefault(ctx context.Context, fbClientID string) interface{}
+	HandleDefault(ctx context.Context, fbClientID string) proto.Message
 }
 
 type DFProcessor struct {
@@ -29,16 +29,10 @@ func (dp *DFProcessor) NewDFProcessor() {
 	dp.sessionClient = sessionClient
 }
 
-func (dp *DFProcessor) HandleDefault(ctx context.Context, fbClientID string) interface{}{
-	req := &dialogflowpb.DetectIntentRequest{
-		// TODO: Fill request struct fields.
+func (dp *DFProcessor) HandleDefault(ctx context.Context, fbClientID string) proto.Message {
+	resp := &dialogflowpb.Intent_Message_SimpleResponse{
+		DisplayText: "sorry, i didnt understand you",
 	}
-	resp, err := dp.sessionClient.DetectIntent(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 
 	return resp
 }

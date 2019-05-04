@@ -3,8 +3,8 @@ package facebook
 import (
 	"github.com/andboson/fb-reminder-go/reminders"
 
-	"golang.org/x/net/context"
 	"github.com/andboson/fbbot"
+	"golang.org/x/net/context"
 )
 
 type FBManager interface {
@@ -23,7 +23,7 @@ func NewFBClient(pageToken string) *FBClient {
 	bot := fbbot.New(0, "", "", pageToken)
 
 	return &FBClient{
-		bot:bot,
+		bot: bot,
 	}
 }
 
@@ -34,7 +34,7 @@ func (f *FBClient) SetupPersistentMenu() (err error) {
 
 func (f *FBClient) ShowMenu(ctx context.Context, userID string) (err error) {
 	msg := fbbot.NewGenericMessage()
-//	msg.Text = "  Reminder menu"
+	//	msg.Text = "  Reminder menu"
 	msg.Bubbles = menuItems
 
 	return f.bot.Send(fbbot.User{ID: userID}, msg)

@@ -5,7 +5,6 @@ import (
 
 	"github.com/andboson/fb-reminder-go/facebook"
 	"github.com/andboson/fb-reminder-go/reminders"
-
 )
 
 func main() {

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"log"
 	"encoding/json"
 	"io/ioutil"
+	"log"
 )
 
 const configFile = "config.json"
