@@ -34,9 +34,11 @@ func NewDFProcessor(authFile string) *DFProcessor {
 }
 
 func (dp *DFProcessor) HandleDefault(ctx context.Context, fbClientID string) proto.Message {
-	resp := &dialogflowpb.Intent_Message_SimpleResponse{
-		DisplayText: "sorry, i didnt understand you",
-	}
+	resp := &dialogflowpb.WebhookResponse{}
+	resp.FulfillmentText = "hhhh"
+	//resp := &dialogflowpb.Intent_Message_SimpleResponse{
+	//	DisplayText: "sorry, i didnt understand you",
+	//}
 
 	return resp
 }

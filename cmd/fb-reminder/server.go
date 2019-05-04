@@ -67,7 +67,7 @@ func (s *Service) handleWebhook(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	resp, err := s.dispatch(wr, s.dfp, s.fb)
+	resp, err := s.dispatch(wr)
 	if err != nil {
 		log.Printf("err dispatch request: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -77,7 +77,7 @@ func (s *Service) handleWebhook(w http.ResponseWriter, req *http.Request) {
 	w.Write(resp)
 }
 
-func (s *Service) dispatch(wr dialogflow.WebhookRequest, dfp processor.Processor, fb facebook.FBManager) ([]byte, error) {
+func (s *Service) dispatch(wr dialogflow.WebhookRequest) ([]byte, error) {
 	var resp proto.Message
 	var ctx = context.Background()
 	var err error
@@ -88,11 +88,11 @@ func (s *Service) dispatch(wr dialogflow.WebhookRequest, dfp processor.Processor
 	fbClientID := extractFBClientID(wr)
 	switch wr.GetQueryResult().GetIntent().GetDisplayName() {
 	case "menu":
-		resp = dfp.HandleDefault(ctx, fbClientID)
-//		err = fb.ShowMenu(ctx, fbClientID)
+		resp = s.dfp.HandleDefault(ctx, fbClientID)
+//		err = s.fb.ShowMenu(ctx, fbClientID)
 
 	default:
-		resp = dfp.HandleDefault(ctx, fbClientID)
+		resp = s.dfp.HandleDefault(ctx, fbClientID)
 	}
 
 	if err != nil {
