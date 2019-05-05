@@ -30,8 +30,14 @@ func NewFBClient(pageToken string) *FBClient {
 }
 
 func (f *FBClient) SetupPersistentMenu(ctx context.Context) (err error) {
+	menu := fbbot.NewMenu()
+	menu.AddMenuItems(
+		fbbot.NewPostbackMenuItem("Create reminder", "reminder_create"),
+		fbbot.NewPostbackMenuItem("Reminders for today", "show_today"),
+		fbbot.NewPostbackMenuItem("Delete all reminders", "delete_all"),
+	)
 
-	return
+	return f.bot.AddPersistentMenus(menu)
 }
 
 func (f *FBClient) ShowMenu(ctx context.Context, userID string) (err error) {

@@ -19,7 +19,7 @@ type scnedulerSuite struct {
 	rm  reminders.Reminderer
 	fb  facebook.Manager
 	dfp processor.Processor
-	ml sync.Mutex
+	ml  sync.Mutex
 
 	suite.Suite
 }

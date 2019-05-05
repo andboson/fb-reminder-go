@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"time"
 
@@ -27,6 +28,11 @@ func main() {
 	rm := reminders.NewManager(db)
 	fb := facebook.NewFBClient(c.FbToken)
 	dfp := processor.NewDFProcessor("./config.json")
+
+	err = fb.SetupPersistentMenu(context.Background())
+	if err != nil {
+		log.Printf("Err setup menus: %s", err)
+	}
 
 	scheduler := NewScheduler(rm, fb)
 	scheduler.Start(c.SnoozePeriod, checkInterval)
