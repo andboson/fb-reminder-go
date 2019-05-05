@@ -43,7 +43,7 @@ just `make build`
 
 ### run
 
-Run './reminder' app
+Run `./reminder` app
 
 App will start on `3000` port by default
 
