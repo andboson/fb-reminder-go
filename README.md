@@ -20,6 +20,7 @@ minimal `config.json` content:
 
 ```  
 {  
+    "server_address": ":3000",
     "snooze_period": "5m",
     "pg_user": "********",
     "pg_passwd": "******",
@@ -44,7 +45,5 @@ just `make build`
 ### run
 
 Run `./reminder` app
-
-App will start on `3000` port by default
 
 All requests must be signed with `X-Key` header (value of `x_key` config field)
