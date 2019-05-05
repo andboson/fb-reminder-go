@@ -2,8 +2,11 @@ export GO111MODULE=on
 
 all: mod test build
 
-mod:
+mod: dep
 	go mod tidy
+
+dep:
+	go get  github.com/go-bindata/go-bindata && go install github.com/go-bindata/go-bindata
 
 generate:
 	go generate -x ./...

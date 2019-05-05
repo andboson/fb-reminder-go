@@ -9,7 +9,7 @@ import (
 	bindata "github.com/golang-migrate/migrate/source/go_bindata"
 )
 
-//go:generate sh -c "cd ../migrations && go-bindata -pkg migrations ."
+//go:generate sh -c "cd ../migrations && $GOPATH/bin/go-bindata -pkg migrations ."
 
 func Migrate(db *sql.DB) error {
 
