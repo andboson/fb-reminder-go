@@ -19,7 +19,7 @@ type dispSuite struct {
 	disp Dispatcherer
 
 	rm  reminders.Reminderer
-	fb  facebook.FBManager
+	fb  facebook.Manager
 	dfp processor.Processor
 
 	suite.Suite
@@ -40,12 +40,11 @@ func (s *dispSuite) Test_MenuIntentRequest() {
 }
 
 func (s *dispSuite) SetupSuite() {
-
 	s.fb = new(FBClientMock)
 	s.rm = new(ReminderManagerMock)
 	s.dfp = new(DialogFlowMock)
-	s.disp = NewDispatcher(s.rm, s.fb, s.dfp)
 
+	s.disp = NewDispatcher(s.rm, s.fb, s.dfp)
 }
 
 func TestDispTestSuite(t *testing.T) {

@@ -62,7 +62,6 @@ func (fb *FBClientMock) SetupPersistentMenu(ctx context.Context) error {
 }
 
 ///dialogflow Processor
-
 type DialogFlowMock struct {
 	mock.Mock
 }
@@ -77,7 +76,7 @@ func (dp *DialogFlowMock) ReminderAction(ctx context.Context, fbClientID string,
 	return args.Get(0).(proto.Message)
 }
 
-// dispatcher mock
+// Dispatcher mock
 type DispatcherMock struct {
 	mock.Mock
 }

@@ -10,7 +10,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-type FBManager interface {
+type Manager interface {
 	ShowMenu(ctx context.Context, userID string) error
 	ShowCreateConfirm(ctx context.Context, userID string, rem reminders.Reminder) error
 	ShowReminder(ctx context.Context, userID string, rem reminders.Reminder) error

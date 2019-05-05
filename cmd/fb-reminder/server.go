@@ -59,16 +59,16 @@ func (s *Service) handleWebhook(w http.ResponseWriter, req *http.Request) {
 	}
 
 	resp, err := s.disp.Dispatch(wr)
-	br, err := json.Marshal(resp)
-	if err != nil {
-		log.Printf("err marshall response: %s", err)
-		br = []byte(err.Error())
-	}
-
 	if err != nil {
 		log.Printf("err dispatch request: %s", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
+	}
+
+	br, err := json.Marshal(resp)
+	if err != nil {
+		log.Printf("err marshall response: %s", err)
+		br = []byte(err.Error())
 	}
 
 	w.Write(br)

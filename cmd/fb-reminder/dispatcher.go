@@ -12,7 +12,6 @@ import (
 	"github.com/andboson/fb-reminder-go/reminders"
 
 	"github.com/golang/protobuf/proto"
-	//"github.com/jinzhu/now"
 	"google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 )
 
@@ -22,11 +21,11 @@ type Dispatcherer interface {
 
 type Dispatcher struct {
 	rm  reminders.Reminderer
-	fb  facebook.FBManager
+	fb  facebook.Manager
 	dfp processor.Processor
 }
 
-func NewDispatcher(rm reminders.Reminderer, fb facebook.FBManager, dfp processor.Processor) *Dispatcher {
+func NewDispatcher(rm reminders.Reminderer, fb facebook.Manager, dfp processor.Processor) *Dispatcher {
 	return &Dispatcher{
 		fb:  fb,
 		rm:  rm,
@@ -91,8 +90,6 @@ func extractReminderParams(contexts []*dialogflow.Context) reminders.Reminder {
 				0,
 				remindAt.Location())
 
-			//_, offset := remindAt.Zone()
-			//rem.RemindAtOriginal = now.New(remindAt).Add(time.Duration(offset) * time.Second).String()
 			rem.RemindAtOriginal = remindAt.String()
 			rem.Text = params["any"].GetStringValue()
 			rem.RemindAt = remindAt

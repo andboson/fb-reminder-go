@@ -61,6 +61,8 @@ func (s *remindersSuite) Test_GetToday() {
 
 func (s *remindersSuite) SetupSuite() {
 	var err error
+
+	// setup db
 	s.Setup("rem_test")
 	addr := s.SetupPSQL("classes")
 	s.dbAddr = addr
@@ -79,7 +81,7 @@ func (s *remindersSuite) SetupSuite() {
 	}, 1*time.Minute)
 	s.Require().NoError(err, `Could not connect to db docker: %s`, err)
 
-	// миграции
+	// migrations
 	err = migrations.Migrate(s.db)
 	s.Require().NoError(err)
 
