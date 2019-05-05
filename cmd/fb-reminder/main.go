@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/andboson/fb-reminder-go/processor"
 	"log"
 
 	"github.com/andboson/fb-reminder-go/facebook"
+	"github.com/andboson/fb-reminder-go/processor"
 	"github.com/andboson/fb-reminder-go/reminders"
 )
 
