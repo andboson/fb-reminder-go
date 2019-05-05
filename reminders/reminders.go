@@ -2,6 +2,7 @@ package reminders
 
 import (
 	"database/sql"
+	"encoding/json"
 	"time"
 )
 
@@ -12,12 +13,18 @@ type Reminderer interface {
 }
 
 type Reminder struct {
-	Id               int
-	Text             string
-	UserID           string
-	RemindAt         time.Time
-	RemindAtOriginal string
-	Snoozed          bool
+	Id               int       `json:"id"`
+	Text             string    `json:"text"`
+	UserID           string    `json:"user_id"`
+	RemindAt         time.Time `json:"remind_at"`
+	RemindAtOriginal string    `json:"remind_at_original"`
+	Snoozed          bool      `json:"snoozed"`
+}
+
+func (r Reminder) String() string {
+	b, _ := json.Marshal(r)
+
+	return string(b)
 }
 
 type Manager struct {

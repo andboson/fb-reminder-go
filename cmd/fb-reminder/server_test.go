@@ -1,17 +1,13 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/andboson/fb-reminder-go/facebook"
-	"github.com/andboson/fb-reminder-go/processor"
-	"github.com/andboson/fb-reminder-go/reminders"
-
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 )
@@ -20,17 +16,14 @@ type serverSuite struct {
 	srv     *Service
 	address string
 
-	rm  reminders.Reminderer
-	fb  facebook.FBManager
-	dfp processor.Processor
+	disp Dispatcherer
 
 	suite.Suite
 }
 
 func (s *serverSuite) Test_MenuIntentRequest() {
-	s.fb.(*FBClientMock).On("ShowMenu", context.TODO(), "fbclient_id1").Return(nil)
-	s.dfp.(*DialogFlowMock).On("HandleDefault", context.TODO(), "fbclient_id1").
-		Return(&dialogflowpb.Intent_Message_SimpleResponse{})
+	s.disp.(*DispatcherMock).On("Dispatch", mock.Anything).
+		Return(&dialogflowpb.Intent_Message_SimpleResponse{}, nil)
 
 	resp := s.request(showMenuIntentRequest, "POST", "/webhook")
 	s.NotNil(resp)
@@ -43,20 +36,18 @@ func (s *serverSuite) SetupSuite() {
 	c.ServerAddress = "localhost:3002"
 	s.address = c.ServerAddress
 
-	s.fb = new(FBClientMock)
-	s.rm = new(ReminderManagerMock)
-	s.dfp = new(DialogFlowMock)
-	s.srv = NewService(c.ServerAddress, s.rm, s.fb, s.dfp)
+	s.disp = new(DispatcherMock)
+	s.srv = NewService(c.ServerAddress, s.disp)
 
 	go func() {
 		err := s.srv.Serve()
 		s.Require().NoError(err)
 	}()
-	time.Sleep(500 * time.Microsecond)
+	time.Sleep(100 * time.Microsecond)
 }
 
 func (s *serverSuite) TearDownSuite() {
-	s.srv.Stop()
+	//s.srv.Stop()
 }
 
 func TestServerTestSuite(t *testing.T) {

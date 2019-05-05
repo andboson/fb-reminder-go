@@ -1,35 +1,25 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/andboson/fb-reminder-go/facebook"
-	"github.com/andboson/fb-reminder-go/processor"
-	"github.com/andboson/fb-reminder-go/reminders"
-
 	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/proto"
 	"google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 )
 
 type Service struct {
 	address string
 	srv     *http.Server
-	rm      reminders.Reminderer
-	fb      facebook.FBManager
-	dfp     processor.Processor
+	disp    Dispatcherer
 }
 
-func NewService(address string, rm reminders.Reminderer, fb facebook.FBManager, dfp processor.Processor) *Service {
+func NewService(address string, disp Dispatcherer) *Service {
 	var server = &Service{
 		address: address,
-		fb:      fb,
-		rm:      rm,
-		dfp:     dfp,
+		disp:    disp,
 	}
 
 	mux := http.NewServeMux()
@@ -68,57 +58,18 @@ func (s *Service) handleWebhook(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	resp, err := s.dispatch(wr)
-	if err != nil {
-		log.Printf("err dispatch request: %s", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.Write(resp)
-}
-
-func (s *Service) dispatch(wr dialogflow.WebhookRequest) ([]byte, error) {
-	var resp proto.Message
-	var ctx = context.Background()
-	var err error
-
-	fmt.Printf("\n >>> %+v ", wr.GetQueryResult().GetIntent().GetDisplayName())
-	fmt.Printf("\n >>> %+v ", wr.GetQueryResult().GetIntent().GetParameters())
-
-	fbClientID := extractFBClientID(wr)
-	switch wr.GetQueryResult().GetIntent().GetDisplayName() {
-	case "menu":
-		err = s.fb.ShowMenu(ctx, fbClientID)
-	default:
-		resp = s.dfp.HandleDefault(ctx, fbClientID)
-	}
-
-	if err != nil {
-		log.Printf("err dispatch intent: %s", err)
-	}
-
+	resp, err := s.disp.Dispatch(wr)
 	br, err := json.Marshal(resp)
 	if err != nil {
 		log.Printf("err marshall response: %s", err)
 		br = []byte(err.Error())
 	}
 
-	return br, nil
-}
-
-func extractFBClientID(wr dialogflow.WebhookRequest) string {
-	var fbID string
-	var odir = wr.GetOriginalDetectIntentRequest()
-	if data, ok := odir.GetPayload().GetFields()["data"]; ok {
-		if sender, ok := data.GetStructValue().GetFields()["sender"]; ok {
-			senderStruct := sender.GetStructValue()
-			if id, ok := senderStruct.GetFields()["id"]; ok {
-				fbID = id.GetStringValue()
-			}
-		}
+	if err != nil {
+		log.Printf("err dispatch request: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
-	return fbID
-
+	w.Write(br)
 }

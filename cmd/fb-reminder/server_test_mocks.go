@@ -2,9 +2,13 @@ package main
 
 import (
 	"context"
+
 	"github.com/andboson/fb-reminder-go/reminders"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/mock"
+	"google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 )
 
 // reminders
@@ -37,22 +41,22 @@ func (fb *FBClientMock) ShowMenu(ctx context.Context, userID string) error {
 	return args.Error(0)
 }
 
-func (fb *FBClientMock) ShowCreateConfirm(userID string, rem reminders.Reminder) error {
+func (fb *FBClientMock) ShowCreateConfirm(ctx context.Context, userID string, rem reminders.Reminder) error {
 	args := fb.Called(userID, rem)
 	return args.Error(0)
 }
 
-func (fb *FBClientMock) ShowReminder(userID string, rem reminders.Reminder) error {
+func (fb *FBClientMock) ShowReminder(ctx context.Context, userID string, rem reminders.Reminder) error {
 	args := fb.Called(userID, rem)
 	return args.Error(0)
 }
 
-func (fb *FBClientMock) ShowForToday(userID string) error {
+func (fb *FBClientMock) ShowForToday(ctx context.Context, userID string) error {
 	args := fb.Called(userID)
 	return args.Error(0)
 }
 
-func (fb *FBClientMock) SetupPersistentMenu() error {
+func (fb *FBClientMock) SetupPersistentMenu(ctx context.Context) error {
 	args := fb.Called()
 	return args.Error(0)
 }
@@ -66,6 +70,21 @@ type DialogFlowMock struct {
 func (dp *DialogFlowMock) HandleDefault(ctx context.Context, fbClientID string) proto.Message {
 	args := dp.Called(ctx, fbClientID)
 	return args.Get(0).(proto.Message)
+}
+
+func (dp *DialogFlowMock) ReminderAction(ctx context.Context, fbClientID string, qr *dialogflowpb.QueryResult, rm reminders.Reminderer) proto.Message {
+	args := dp.Called(ctx, fbClientID, qr, rm)
+	return args.Get(0).(proto.Message)
+}
+
+// dispatcher mock
+type DispatcherMock struct {
+	mock.Mock
+}
+
+func (dp *DispatcherMock) Dispatch(wr dialogflow.WebhookRequest) (proto.Message, error) {
+	args := dp.Called(wr)
+	return args.Get(0).(proto.Message), args.Error(1)
 }
 
 // const

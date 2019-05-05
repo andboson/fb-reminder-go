@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/andboson/fb-reminder-go/internal"
+	"github.com/andboson/fb-reminder-go/migrations"
 
 	"github.com/golang-migrate/migrate"
-	"github.com/golang-migrate/migrate/database/postgres"
 	_ "github.com/golang-migrate/migrate/source/file"
 	"github.com/stretchr/testify/suite"
 )
@@ -41,6 +41,7 @@ func (s *remindersSuite) Test_Create_GetByID() {
 }
 
 func (s *remindersSuite) Test_GetToday() {
+	s.db.Exec(`TRUNCATE TABLE reminders;`)
 	t := time.Now().Add(1 * time.Hour)
 	to := t.Add(1 * time.Hour)
 	rem := Reminder{
@@ -79,15 +80,8 @@ func (s *remindersSuite) SetupSuite() {
 	s.Require().NoError(err, `Could not connect to db docker: %s`, err)
 
 	// миграции
-	driver, err := postgres.WithInstance(s.db, &postgres.Config{})
-	s.NoError(err)
-	s.NotNil(driver)
-
-	s.m, err = migrate.NewWithDatabaseInstance("file://../migrations", "postgres", driver)
+	err = migrations.Migrate(s.db)
 	s.Require().NoError(err)
-
-	err = s.m.Up()
-	s.NoError(err)
 
 	s.rm = NewManager(s.db)
 }

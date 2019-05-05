@@ -1,0 +1,11 @@
+  db:
+    container_name: db_pg
+    image: andboson/postgres-multiple-db
+    volumes:
+      - /home/drewsites/data/postgres:/var/lib/postgresql
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=reminder
+      - POSTGRES_PASSWORD=rem
+      - POSTGRES_DB=reminder

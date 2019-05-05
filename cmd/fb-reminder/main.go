@@ -25,7 +25,8 @@ func main() {
 	fb := facebook.NewFBClient(c.FbToken)
 	dfp := processor.NewDFProcessor("./config.json")
 
-	server := NewService(c.ServerAddress, rm, fb, dfp)
+	dispatcher := NewDispatcher(rm, fb, dfp)
+	server := NewService(c.ServerAddress, dispatcher)
 
 	if err = server.Serve(); err != nil {
 		log.Fatalf("exit fatal")
