@@ -1,37 +1,50 @@
-## Welcome to GitHub Pages
+# fb-reminder-go
 
-You can use the [editor on GitHub](https://github.com/andboson/fb-reminder-go/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+Facebook reminder bot
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Powered by DialogFlow AI
 
-### Markdown
+### install
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Import `reminder.zip` in dialog flow and setup fulfillment in https://console.dialogflow.com/api-client
 
-```markdown
-Syntax highlighted code block
+Setup `docker` if you want to run tests 
 
-# Header 1
-## Header 2
-### Header 3
+#### setup DB
 
-- Bulleted
-- List
+create database and creds
 
-1. Numbered
-2. List
+#### setup config
 
-**Bold** and _Italic_ and `Code` text
+minimal `config.json` content:
 
-[Link](url) and ![Image](src)
+```  
+{  
+    "snooze_period": "5m",
+    "pg_user": "********",
+    "pg_passwd": "******",
+    "pg_db": "***888***",
+    "pg_address": "host:port",
+    "x_key": "<some_secret_header>",
+    "fb_token":"EAAgcpoks048BAB.................",
+    "project_id": "rem.....",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMI..................",
+    "client_email": "email............",
+}
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+#### test, build
 
-### Jekyll Themes
+`make all` - for mods, tests, build  
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/andboson/fb-reminder-go/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+or 
 
-### Support or Contact
+just `make build` 
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+### run
+
+Run './reminder' app
+
+App will start on `3000` port by default
+
+All requests must be signed with `X-Key` header (value of `x_key` config field)
