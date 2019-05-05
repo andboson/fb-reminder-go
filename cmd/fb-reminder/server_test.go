@@ -25,6 +25,7 @@ func (s *serverSuite) Test_MenuIntentRequest() {
 	s.disp.(*DispatcherMock).On("Dispatch", mock.Anything).
 		Return(&dialogflowpb.Intent_Message_SimpleResponse{}, nil)
 
+	time.Sleep(1 * time.Second)
 	resp := s.request(showMenuIntentRequest, "POST", "/webhook")
 	s.NotNil(resp)
 	s.Equal(200, resp.StatusCode)
@@ -37,7 +38,7 @@ func (s *serverSuite) SetupSuite() {
 	s.address = c.ServerAddress
 
 	s.disp = new(DispatcherMock)
-	s.srv = NewService(c.ServerAddress, s.disp)
+	s.srv = NewService(c.ServerAddress, s.disp, "")
 
 	go func() {
 		err := s.srv.Serve()

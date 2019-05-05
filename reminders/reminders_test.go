@@ -52,11 +52,39 @@ func (s *remindersSuite) Test_GetToday() {
 	}
 
 	err := s.rm.Create(rem)
+	s.NoError(err)
 
 	rems, err := s.rm.GetTodayByUser("1223567")
 	s.Require().NoError(err)
 	s.Require().Equal(len(rems), 1)
 	s.Equal(rem.Text, rems[0].Text)
+}
+
+func (s *remindersSuite) Test_GetExpired() {
+	t := time.Now().Add(1 * time.Hour)
+	rem := Reminder{
+		Text:             "texttext",
+		UserID:           "1223567",
+		RemindAt:         t,
+		RemindAtOriginal: t.String(),
+	}
+	err := s.rm.Create(rem)
+	s.NoError(err)
+
+	t = time.Now().Add(-1 * time.Hour)
+	rem = Reminder{
+		Text:             "texttext2",
+		UserID:           "000",
+		RemindAt:         t,
+		RemindAtOriginal: t.String(),
+	}
+	err = s.rm.Create(rem)
+	s.NoError(err)
+
+	rems, err := s.rm.GetExpired("5m")
+	s.Require().NoError(err)
+	s.Require().Equal(len(rems), 1)
+	s.Equal(rem.Text, "texttext2")
 }
 
 func (s *remindersSuite) SetupSuite() {

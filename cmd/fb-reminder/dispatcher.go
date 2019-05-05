@@ -39,7 +39,6 @@ func (d *Dispatcher) Dispatch(wr dialogflow.WebhookRequest) (proto.Message, erro
 	var err error
 
 	fmt.Printf("\n >>> %+v ", wr.GetQueryResult().GetIntent().GetDisplayName())
-	fmt.Printf("\n >>> %+v ", wr.GetQueryResult().GetIntent().GetParameters())
 
 	fbClientID := extractFBClientID(wr)
 	switch wr.GetQueryResult().GetIntent().GetDisplayName() {
@@ -49,8 +48,25 @@ func (d *Dispatcher) Dispatch(wr dialogflow.WebhookRequest) (proto.Message, erro
 		rem := extractReminderParams(wr.GetQueryResult().GetOutputContexts())
 		rem.UserID = fbClientID
 		err = d.fb.ShowCreateConfirm(ctx, fbClientID, rem)
+		if err == nil {
+			resp = d.dfp.SimpleMessage("confirm plz")
+		}
 	case "reminder_action":
 		resp = d.dfp.ReminderAction(ctx, fbClientID, wr.GetQueryResult(), d.rm)
+	case "show_today":
+		rems, err := d.rm.GetTodayByUser(fbClientID)
+		if err != nil || len(rems) < 1 {
+			log.Printf("err get reminder for today: %s", err)
+			resp = d.dfp.SimpleMessage("nothing")
+			break
+		}
+		err = d.fb.ShowForToday(ctx, fbClientID, rems)
+	case "delete_all":
+		resp = d.dfp.SimpleMessage("done")
+		err = d.rm.DeleteAllByUser(fbClientID)
+		if err != nil {
+			resp = d.dfp.SimpleMessage("something wrong")
+		}
 	default:
 		resp = d.dfp.HandleDefault(ctx, fbClientID)
 	}

@@ -15,6 +15,7 @@ import (
 type Processor interface {
 	HandleDefault(ctx context.Context, fbClientID string) proto.Message
 	ReminderAction(ctx context.Context, fbClientID string, qr *dialogflowpb.QueryResult, rm reminders.Reminderer) proto.Message
+	SimpleMessage(text string) proto.Message
 }
 
 type DFProcessor struct {
@@ -44,10 +45,6 @@ func (dp *DFProcessor) HandleDefault(ctx context.Context, fbClientID string) pro
 }
 
 func (dp *DFProcessor) ReminderAction(ctx context.Context, fbClientID string, qr *dialogflowpb.QueryResult, rm reminders.Reminderer) proto.Message {
-	log.Printf("-1-> %+v", qr.GetOutputContexts())
-	log.Printf("\n -2-> %+v", qr.GetWebhookPayload())
-	log.Printf("\n -3-> %+v", qr.GetQueryText())
-	//log.Printf("\n -4-> %+v", qr)
 	var err error
 	var ffText = "done"
 	var action = reminders.ActionFromString(qr.GetQueryText())
@@ -55,6 +52,12 @@ func (dp *DFProcessor) ReminderAction(ctx context.Context, fbClientID string, qr
 	switch action.Type {
 	case "save":
 		err = rm.Create(action.Alert)
+	case "confirm":
+		fallthrough
+	case "delete":
+		err = rm.DeleteByID(action.Alert.Id)
+	case "snooze":
+		err = rm.SetSnooze(action.Alert.Id)
 	default:
 		log.Printf("unknown action: %s", action.Type)
 		ffText = "something wrong"
@@ -69,4 +72,10 @@ func (dp *DFProcessor) ReminderAction(ctx context.Context, fbClientID string, qr
 	}
 
 	return resp
+}
+
+func (dp *DFProcessor) SimpleMessage(text string) proto.Message {
+	return &dialogflowpb.WebhookResponse{
+		FulfillmentText: text,
+	}
 }

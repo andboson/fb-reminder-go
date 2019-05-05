@@ -14,12 +14,14 @@ type Service struct {
 	address string
 	srv     *http.Server
 	disp    Dispatcherer
+	xkey    string
 }
 
-func NewService(address string, disp Dispatcherer) *Service {
+func NewService(address string, disp Dispatcherer, key string) *Service {
 	var server = &Service{
 		address: address,
 		disp:    disp,
+		xkey:    key,
 	}
 
 	mux := http.NewServeMux()
@@ -50,6 +52,18 @@ func (s *Service) Stop() error {
 
 func (s *Service) handleWebhook(w http.ResponseWriter, req *http.Request) {
 	var err error
+
+	if req.Method != "POST" {
+		log.Printf("wrong method: %s", req.Method)
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	if req.Header.Get("X-Key") != s.xkey && s.xkey != "" {
+		log.Printf("forbidden: %s", req.Header.Get("X-Key"))
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
 
 	wr := dialogflow.WebhookRequest{}
 	if err = jsonpb.Unmarshal(req.Body, &wr); err != nil {

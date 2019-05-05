@@ -26,8 +26,28 @@ func (rm *ReminderManagerMock) GetByID(id int) (*reminders.Reminder, error) {
 	return args.Get(0).(*reminders.Reminder), args.Error(1)
 }
 
+func (rm *ReminderManagerMock) DeleteByID(id int) error {
+	args := rm.Called(id)
+	return args.Error(0)
+}
+
+func (rm *ReminderManagerMock) SetSnooze(id int) error {
+	args := rm.Called(id)
+	return args.Error(0)
+}
+
+func (rm *ReminderManagerMock) DeleteAllByUser(userID string) error {
+	args := rm.Called(userID)
+	return args.Error(0)
+}
+
 func (rm *ReminderManagerMock) GetTodayByUser(userID string) ([]reminders.Reminder, error) {
 	args := rm.Called(userID)
+	return args.Get(0).([]reminders.Reminder), args.Error(1)
+}
+
+func (rm *ReminderManagerMock) GetExpired(snoozePeriod string) ([]reminders.Reminder, error) {
+	args := rm.Called(snoozePeriod)
 	return args.Get(0).([]reminders.Reminder), args.Error(1)
 }
 
@@ -42,22 +62,22 @@ func (fb *FBClientMock) ShowMenu(ctx context.Context, userID string) error {
 }
 
 func (fb *FBClientMock) ShowCreateConfirm(ctx context.Context, userID string, rem reminders.Reminder) error {
-	args := fb.Called(userID, rem)
+	args := fb.Called(ctx, userID, rem)
 	return args.Error(0)
 }
 
 func (fb *FBClientMock) ShowReminder(ctx context.Context, userID string, rem reminders.Reminder) error {
-	args := fb.Called(userID, rem)
+	args := fb.Called(ctx, userID, rem)
 	return args.Error(0)
 }
 
-func (fb *FBClientMock) ShowForToday(ctx context.Context, userID string) error {
-	args := fb.Called(userID)
+func (fb *FBClientMock) ShowForToday(ctx context.Context, userID string, rems []reminders.Reminder) error {
+	args := fb.Called(ctx, userID, rems)
 	return args.Error(0)
 }
 
 func (fb *FBClientMock) SetupPersistentMenu(ctx context.Context) error {
-	args := fb.Called()
+	args := fb.Called(ctx)
 	return args.Error(0)
 }
 
@@ -68,6 +88,11 @@ type DialogFlowMock struct {
 
 func (dp *DialogFlowMock) HandleDefault(ctx context.Context, fbClientID string) proto.Message {
 	args := dp.Called(ctx, fbClientID)
+	return args.Get(0).(proto.Message)
+}
+
+func (dp *DialogFlowMock) SimpleMessage(text string) proto.Message {
+	args := dp.Called(text)
 	return args.Get(0).(proto.Message)
 }
 

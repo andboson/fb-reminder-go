@@ -2,7 +2,6 @@ package facebook
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/andboson/fb-reminder-go/reminders"
 
@@ -14,7 +13,7 @@ type Manager interface {
 	ShowMenu(ctx context.Context, userID string) error
 	ShowCreateConfirm(ctx context.Context, userID string, rem reminders.Reminder) error
 	ShowReminder(ctx context.Context, userID string, rem reminders.Reminder) error
-	ShowForToday(ctx context.Context, userID string) error
+	ShowForToday(ctx context.Context, userID string, rems []reminders.Reminder) error
 	SetupPersistentMenu(ctx context.Context) error
 }
 
@@ -43,7 +42,6 @@ func (f *FBClient) ShowMenu(ctx context.Context, userID string) (err error) {
 }
 
 func (f *FBClient) ShowCreateConfirm(ctx context.Context, userID string, rem reminders.Reminder) (err error) {
-	log.Printf("rem: %+v", rem.String())
 	msg := fbbot.NewGenericMessage()
 	msg.Bubbles = []fbbot.Bubble{
 		{
@@ -68,11 +66,52 @@ func (f *FBClient) ShowCreateConfirm(ctx context.Context, userID string, rem rem
 }
 
 func (f *FBClient) ShowReminder(ctx context.Context, userID string, rem reminders.Reminder) (err error) {
+	msg := fbbot.NewGenericMessage()
+	btns := []fbbot.Button{
+		{
+			Type:    postbackType,
+			Title:   "confirm",
+			Payload: reminders.ActionString("confirm", rem),
+		},
+	}
 
-	return
+	if !rem.Snoozed {
+		btns = append(btns, fbbot.Button{
+			Type:    postbackType,
+			Title:   "snooze",
+			Payload: reminders.ActionString("snooze", rem),
+		})
+	}
+
+	msg.Bubbles = []fbbot.Bubble{
+		{
+			Title:    "Reminder alert",
+			SubTitle: rem.Text,
+			Buttons:  btns,
+		},
+	}
+
+	return f.bot.Send(fbbot.User{ID: userID}, msg)
 }
 
-func (f *FBClient) ShowForToday(ctx context.Context, userID string) (err error) {
+func (f *FBClient) ShowForToday(ctx context.Context, userID string, rems []reminders.Reminder) (err error) {
+	msg := fbbot.NewGenericMessage()
+	msg.Bubbles = []fbbot.Bubble{}
+	for _, rem := range rems {
+		bubble := fbbot.Bubble{
+			Title:    rem.Text,
+			SubTitle: rem.RemindAtOriginal,
+			Buttons: []fbbot.Button{
+				{
+					Type:    postbackType,
+					Title:   "delete",
+					Payload: reminders.ActionString("delete", rem),
+				},
+			},
+		}
 
-	return
+		msg.Bubbles = append(msg.Bubbles, bubble)
+	}
+
+	return f.bot.Send(fbbot.User{ID: userID}, msg)
 }
