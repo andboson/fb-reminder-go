@@ -1,8 +1,6 @@
   db:
     container_name: db_pg
-    image: andboson/postgres-multiple-db
-    volumes:
-      - /home/drewsites/data/postgres:/var/lib/postgresql
+    image: postgres
     ports:
       - 5432:5432
     environment:
