@@ -27,8 +27,7 @@ require (
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/sirupsen/logrus v1.4.1 // indirect
 	github.com/stretchr/testify v1.2.2
-	golang.org/x/net v0.0.0-20190424112056-4829fb13d2c6
-	golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223 // indirect
+	golang.org/x/net v0.7.0
 	google.golang.org/api v0.4.0
 	google.golang.org/genproto v0.0.0-20190425155659-357c62f0e4bb
 	gotest.tools v2.2.0+incompatible // indirect
